@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor E-commerce MVP (R$ 1.000) — Shopee &amp; TikTok Shop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-150">
+  <div id="app" class="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+    <!-- Top Header -->
+    <header class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm mb-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+              MVP 2027 • Orçamento R$ 1.000,00
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              Shopee &amp; TikTok Shop
+            </span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-1.5">
+            Gestor E-commerce — Precificação, Liquidação &amp; Controle de Produtos
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Validação de margem líquida real, piso de liquidação sem prejuízo, alocação de lote e catálogo persistente.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 self-start md:self-center">
+          <button
+            id="btnToggleTheme"
+            type="button"
+            onclick="toggleTheme()"
+            class="px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 transition"
+          >
+            Alternar Tema
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
+        <button
+          id="tabBtnSimulador"
+          type="button"
+          onclick="switchTab('simulador')"
+          class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950"
+        >
+          <span>1. Simulador &amp; Cadastro</span>
+        </button>
+        <button
+          id="tabBtnCatalogo"
+          type="button"
+          onclick="switchTab('catalogo')"
+          class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          <span>2. Controle &amp; Catálogo de Produtos</span>
+          <span id="badgeCatalogCount" class="px-2 py-0.5 text-xs rounded-full bg-slate-900/10 dark:bg-white/15 tabular-nums">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================================= -->
+    <!-- TAB 1: SIMULADOR & CADASTRO                               -->
+    <!-- ========================================================= -->
+    <main id="viewSimulador" class="space-y-4">
+      <!-- 5 Stress Scenarios Bar -->
+      <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Cenários de Teste Pré-Configurados (Clique para Simular)
+            </h2>
+          </div>
+          <span class="text-xs text-slate-400">Validação matemática Shopee &amp; TikTok Shop</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+          <button type="button" onclick="loadScenario('c1')" class="text-left p-3 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20 hover:bg-rose-100/70 dark:hover:bg-rose-950/40 transition">
+            <div class="text-[11px] font-bold text-rose-700 dark:text-rose-300">1. Armadilha Barato</div>
+            <div class="text-xs font-semibold mt-0.5 truncate">Cabo / Item R$ 24,90</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Shopee • CMV R$ 10</div>
+          </button>
+
+          <button type="button" onclick="loadScenario('c2')" class="text-left p-3 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/40 transition">
+            <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">2. Ticket Ideal Shopee</div>
+            <div class="text-xs font-semibold mt-0.5 truncate">Suporte / Item R$ 59,90</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Shopee • CMV R$ 24</div>
+          </button>
+
+          <button type="button" onclick="loadScenario('c3')" class="text-left p-3 rounded-xl border border-sky-200 dark:border-sky-900/60 bg-sky-50/60 dark:bg-sky-950/20 hover:bg-sky-100/70 dark:hover:bg-sky-950/40 transition">
+            <div class="text-[11px] font-bold text-sky-700 dark:text-sky-300">3. Mesmo no TikTok</div>
+            <div class="text-xs font-semibold mt-0.5 truncate">Impulso R$ 59,90</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">TikTok Shop • CMV R$ 24</div>
+          </button>
+
+          <button type="button" onclick="loadScenario('c4')" class="text-left p-3 rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/60 dark:bg-indigo-950/20 hover:bg-indigo-100/70 dark:hover:bg-indigo-950/40 transition">
+            <div class="text-[11px] font-bold text-indigo-700 dark:text-indigo-300">4. Kit Ticket Alto</div>
+            <div class="text-xs font-semibold mt-0.5 truncate">Kit Curva A R$ 119,90</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Shopee • CMV R$ 48</div>
+          </button>
+
+          <button type="button" onclick="loadScenario('c5')" class="text-left p-3 rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 transition">
+            <div class="text-[11px] font-bold text-amber-700 dark:text-amber-300">5. Liquidação (21d+)</div>
+            <div class="text-xs font-semibold mt-0.5 truncate">Resgate Caixa R$ 39,90</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Shopee • Sem Ads</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Calculator + Results Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Left Inputs Column -->
+        <section class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-base font-bold">Parâmetros do Produto &amp; Canal</h2>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="applyChannelPreset('shopee')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-950/60 dark:text-orange-300 transition">
+                Preset Shopee (20% + R$4)
+              </button>
+              <button type="button" onclick="applyChannelPreset('tiktok')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 transition">
+                Preset TikTok (8% + R$3)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <label for="inpNome" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Nome / Descrição do Produto (SKU)
+              </label>
+              <input
+                id="inpNome"
+                type="text"
+                value="Suporte Articulado Notebook / Mini Parafusadeira"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="selCanal" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Canal de Venda
+              </label>
+              <select
+                id="selCanal"
+                onchange="onCanalChange()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
+                <option value="Shopee" selected>Shopee</option>
+                <option value="TikTok Shop">TikTok Shop</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label for="inpCusto" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Custo Compra (R$)
+              </label>
+              <input
+                id="inpCusto"
+                type="number"
+                step="0.01"
+                min="0"
+                value="24.00"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="inpPreco" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Preço Venda (R$)
+              </label>
+              <input
+                id="inpPreco"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value="59.90"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="inpComissaoPct" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Comissão Canal (%)
+              </label>
+              <input
+                id="inpComissaoPct"
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                value="20.0"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="inpTaxaFixa" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Taxa Fixa Item (R$)
+              </label>
+              <input
+                id="inpTaxaFixa"
+                type="number"
+                step="0.01"
+                min="0"
+                value="4.00"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label for="inpEmbalagem" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Embalagem/Etq (R$)
+              </label>
+              <input
+                id="inpEmbalagem"
+                type="number"
+                step="0.01"
+                min="0"
+                value="1.20"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="inpAdsDevPct" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Ads + Dev/Avaria (%)
+              </label>
+              <input
+                id="inpAdsDevPct"
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                value="6.0"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div>
+              <label for="inpImpostoPct" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Imposto Variável (%)
+              </label>
+              <input
+                id="inpImpostoPct"
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                value="0.0"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <span class="text-[10px] text-slate-400">MEI = 0% variável</span>
+            </div>
+
+            <div>
+              <label for="inpPesoGramas" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Peso Unitário (g)
+              </label>
+              <input
+                id="inpPesoGramas"
+                type="number"
+                step="10"
+                min="1"
+                value="320"
+                oninput="recalculate()"
+                class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <span class="text-[10px] text-slate-400">Regra família: &le; 500g</span>
+            </div>
+          </div>
+
+          <!-- Suggested Price by Target Margin -->
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div class="flex-1">
+              <label for="inpMargemAlvo" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                Calcular Preço Sugerido para Margem Líquida Alvo (%)
+              </label>
+              <div class="flex items-center gap-2">
+                <input
+                  id="inpMargemAlvo"
+                  type="number"
+                  step="1"
+                  min="1"
+                  max="80"
+                  value="25"
+                  oninput="recalculate()"
+                  class="w-24 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <span class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                  Preço sugerido: <strong id="lblPrecoSugerido" class="text-slate-900 dark:text-white">R$ 0,00</strong>
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onclick="applySuggestedPrice()"
+              class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shrink-0"
+            >
+              Aplicar Preço Sugerido
+            </button>
+          </div>
+
+          <!-- Register Decision Box (Feeds Tab 2 Catalog) -->
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3.5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+                Registrar Decisão no Controle de Produtos
+              </span>
+              <span class="text-[11px] text-slate-500">Salva na Aba 2</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <label for="selDecisaoCadastro" class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Decisão no Cadastro
+                </label>
+                <select
+                  id="selDecisaoCadastro"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Aprovado">🟢 Aprovado (Comprar Lote)</option>
+                  <option value="Em Análise">🟡 Em Análise (Cotar Fornecedor)</option>
+                  <option value="Reprovado">🔴 Reprovado (Margem/Peso/Ticket)</option>
+                  <option value="Em Liquidação">🔵 Em Liquidação (Giro 21d+)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="inpQtdLote" class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Qtd. Planejada no Lote (un)
+                </label>
+                <input
+                  id="inpQtdLote"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="10"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs tabular-nums focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label for="inpObsCadastro" class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                  Fornecedor / Observação
+                </label>
+                <input
+                  id="inpObsCadastro"
+                  type="text"
+                  placeholder="Ex: Distribuidora Brás / Giro rápido"
+                  class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span id="lblSaveFeedback" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"></span>
+              <button
+                type="button"
+                onclick="registerProductFromSimulator()"
+                class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 transition shadow-sm"
+              >
+                + Salvar Produto no Controle (Aba 2)
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Financial Diagnosis & Breakeven Column -->
+        <section class="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col justify-between space-y-4">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold">Diagnóstico Financeiro Unitário</h2>
+              <span id="semaforoBadge" class="px-3 py-1 rounded-full text-xs font-extrabold tabular-nums">
+                --
+              </span>
+            </div>
+
+            <!-- Primary KPIs -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+                <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Lucro Líquido Unitário</div>
+                <div id="kpiLucroUnit" class="text-xl sm:text-2xl font-extrabold mt-0.5 tabular-nums">R$ 0,00</div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+                <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Margem Líquida Real</div>
+                <div id="kpiMargemPct" class="text-xl sm:text-2xl font-extrabold mt-0.5 tabular-nums">0,00%</div>
+              </div>
+            </div>
+
+            <!-- Liquidation Floor Box (Breakeven Zero Loss) -->
+            <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold text-amber-900 dark:text-amber-200">
+                  Preço Mínimo de Liquidação (Zero Prejuízo)
+                </span>
+                <button
+                  type="button"
+                  onclick="applyLiquidationFloor()"
+                  class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-600 hover:bg-amber-700 text-white transition"
+                >
+                  Usar Preço Resgate
+                </button>
+              </div>
+              <div id="kpiPisoLiquidacao" class="text-lg font-extrabold text-amber-950 dark:text-amber-100 mt-1 tabular-nums">
+                R$ 0,00
+              </div>
+              <p class="text-[11px] text-amber-800/90 dark:text-amber-300/90 mt-0.5">
+                Piso matemático para recuperar custo do produto, taxa fixa e embalagem sem perder caixa (sem Ads extra).
+              </p>
+            </div>
+
+            <!-- Operational Alerts -->
+            <div id="alertsBox" class="space-y-1.5"></div>
+
+            <!-- Calculation Breakdown -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Memória de Cálculo por Unidade
+              </h3>
+              <dl class="space-y-1.5 text-xs tabular-nums">
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(+) Preço de Venda</dt>
+                  <dd id="memVenda" class="font-semibold">R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Custo da Mercadoria (CMV)</dt>
+                  <dd id="memCusto" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Comissão do Canal</dt>
+                  <dd id="memComissao" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Taxa Fixa por Item</dt>
+                  <dd id="memTaxaFixa" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Embalagem &amp; Etiqueta</dt>
+                  <dd id="memEmbalagem" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Provisão Ads + Devolução/Avaria</dt>
+                  <dd id="memAdsDev" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-slate-600 dark:text-slate-400">(-) Imposto Variável</dt>
+                  <dd id="memImposto" class="font-medium text-rose-600 dark:text-rose-400">-R$ 0,00</dd>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-slate-200 dark:border-slate-700 text-sm font-extrabold">
+                  <dt>(=) Lucro Líquido Estimado</dt>
+                  <dd id="memLucroFinal" class="tabular-nums">R$ 0,00</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+            Semáforo de margem líquida: &lt; 15% Reprovado • 15%–22% Atenção • &gt; 22% Aprovado.
+          </div>
+        </section>
+      </div>
+
+      <!-- Batch Allocation Simulator (MVP R$ 1.000,00) -->
+      <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold">Simulador de Alocação de Lote (MVP R$ 1.000,00)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Teste a distribuição de capital, lucro projetado e peso total da sacola para despacho familiar antes de comprar.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onclick="loadSampleBatch()"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition"
+            >
+              Carregar Lote Exemplo (R$ 1.000)
+            </button>
+            <button
+              type="button"
+              onclick="addCurrentProductToBatch()"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition"
+            >
+              + Adicionar Produto Atual ao Lote
+            </button>
+          </div>
+        </div>
+
+        <!-- Batch Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Capital Alocado (Teto R$ 1.000)</div>
+            <div id="batchCapital" class="text-lg font-extrabold mt-0.5 tabular-nums">R$ 0,00</div>
+            <div id="batchSaldo" class="text-[11px] text-slate-500 tabular-nums">Saldo livre: R$ 1.000,00</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Receita Bruta Projetada</div>
+            <div id="batchReceita" class="text-lg font-extrabold mt-0.5 tabular-nums">R$ 0,00</div>
+            <div id="batchUnidades" class="text-[11px] text-slate-500 tabular-nums">0 unidades</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Lucro Líquido Projetado</div>
+            <div id="batchLucro" class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 tabular-nums">R$ 0,00</div>
+            <div id="batchRoi" class="text-[11px] text-slate-500 tabular-nums">ROI sobre lote: 0%</div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Peso Total do Lote</div>
+            <div id="batchPeso" class="text-lg font-extrabold mt-0.5 tabular-nums">0,00 kg</div>
+            <div class="text-[11px] text-slate-500">Carga física total</div>
+          </div>
+        </div>
+
+        <!-- Batch Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs tabular-nums">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                <th class="py-2 pr-3">Produto</th>
+                <th class="py-2 px-2">Canal</th>
+                <th class="py-2 px-2 text-right">CMV</th>
+                <th class="py-2 px-2 text-right">Venda</th>
+                <th class="py-2 px-2 text-center">Qtd</th>
+                <th class="py-2 px-2 text-right">Subtotal Custo</th>
+                <th class="py-2 px-2 text-right">Lucro Líquido Total</th>
+                <th class="py-2 pl-2 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="batchTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========================================================= -->
+    <!-- TAB 2: CONTROLE & CATÁLOGO DE PRODUTOS                   -->
+    <!-- ========================================================= -->
+    <section id="viewCatalogo" class="hidden space-y-4">
+      <!-- Catalog KPI Summary -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">SKUs Registrados</div>
+          <div id="catTotalSkus" class="text-2xl font-extrabold mt-1 tabular-nums">0</div>
+          <div id="catStatusBreakdown" class="text-[11px] text-slate-500 mt-0.5">0 Aprovados • 0 Reprovados</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Capital Aprovado (vs R$ 1.000)</div>
+          <div id="catCapitalAprovado" class="text-2xl font-extrabold mt-1 tabular-nums">R$ 0,00</div>
+          <div id="catSaldoMvp" class="text-[11px] text-slate-500 mt-0.5 tabular-nums">Saldo disponível: R$ 1.000,00</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Lucro Líquido Projetado (Aprovados)</div>
+          <div id="catLucroAprovado" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">R$ 0,00</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">Considerando qtd. planejada</div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Itens em Liquidação / Análise</div>
+          <div id="catLiquidacaoAnalise" class="text-2xl font-extrabold mt-1 tabular-nums">0</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">Monitoramento de giro &amp; cotação</div>
+        </div>
+      </div>
+
+      <!-- Filters & Actions Bar -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <!-- Status Filter Pills -->
+          <div class="flex flex-wrap gap-1.5" id="statusFilterGroup">
+            <button type="button" data-status="ALL" onclick="setStatusFilter('ALL')" class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950">
+              Todos
+            </button>
+            <button type="button" data-status="Aprovado" onclick="setStatusFilter('Aprovado')" class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              🟢 Aprovados
+            </button>
+            <button type="button" data-status="Em Análise" onclick="setStatusFilter('Em Análise')" class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              🟡 Em Análise
+            </button>
+            <button type="button" data-status="Em Liquidação" onclick="setStatusFilter('Em Liquidação')" class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              🔵 Em Liquidação
+            </button>
+            <button type="button" data-status="Reprovado" onclick="setStatusFilter('Reprovado')" class="status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              🔴 Reprovados
+            </button>
+          </div>
+
+          <!-- Search + Canal + Export -->
+          <div class="flex flex-wrap items-center gap-2">
+            <input
+              id="inpBuscaCatalogo"
+              type="text"
+              placeholder="Buscar produto ou obs..."
+              oninput="renderCatalog()"
+              class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+
+            <select
+              id="selFiltroCanal"
+              onchange="renderCatalog()"
+              class="px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="ALL">Todos os canais</option>
+              <option value="Shopee">Shopee</option>
+              <option value="TikTok Shop">TikTok Shop</option>
+            </select>
+
+            <button
+              type="button"
+              onclick="exportCatalogCSV()"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition"
+            >
+              Exportar CSV
+            </button>
+
+            <button
+              type="button"
+              onclick="exportCatalogJSON()"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition"
+            >
+              Backup JSON
+            </button>
+
+            <label class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition cursor-pointer">
+              Importar JSON
+              <input type="file" accept=".json" onchange="importCatalogJSON(event)" class="hidden" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Catalog Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs tabular-nums">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                <th class="py-2.5 pr-3">Produto / Observação</th>
+                <th class="py-2.5 px-2">Canal</th>
+                <th class="py-2.5 px-2">Decisão Registrada</th>
+                <th class="py-2.5 px-2 text-right">CMV</th>
+                <th class="py-2.5 px-2 text-right">Venda</th>
+                <th class="py-2.5 px-2 text-right">Lucro/Un</th>
+                <th class="py-2.5 px-2 text-right">Margem</th>
+                <th class="py-2.5 px-2 text-right">Piso Liq.</th>
+                <th class="py-2.5 px-2 text-center">Qtd</th>
+                <th class="py-2.5 pl-2 text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="catalogTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY_CATALOG = 'gestor_ecommerce_mvp_catalogo_v1';
+    const STORAGE_KEY_BATCH = 'gestor_ecommerce_mvp_lote_v1';
+    const STORAGE_KEY_THEME = 'gestor_ecommerce_mvp_theme_v1';
+    const MVP_BUDGET = 1000.0;
+
+    let currentStatusFilter = 'ALL';
+
+    const SCENARIOS = {
+      c1: {
+        nome: 'Cabo USB / Película (Armadilha Barato)',
+        canal: 'Shopee',
+        custo: 10.00,
+        preco: 24.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 90,
+        decisao: 'Reprovado',
+        qtd: 15,
+        obs: 'Taxa fixa de R$ 4,00 consome 16% da venda'
+      },
+      c2: {
+        nome: 'Suporte Notebook / Mini Parafusadeira',
+        canal: 'Shopee',
+        custo: 24.00,
+        preco: 59.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 320,
+        decisao: 'Aprovado',
+        qtd: 15,
+        obs: 'Ticket ideal de entrada com boa margem líquida'
+      },
+      c3: {
+        nome: 'Suporte Notebook / Mini Parafusadeira (Impulso)',
+        canal: 'TikTok Shop',
+        custo: 24.00,
+        preco: 59.90,
+        comissaoPct: 8.0,
+        taxaFixa: 3.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 320,
+        decisao: 'Aprovado',
+        qtd: 10,
+        obs: 'Comissão menor deixa margem extra para vídeo/Ads'
+      },
+      c4: {
+        nome: 'Kit Setup / Barbearia Profissional (Curva A)',
+        canal: 'Shopee',
+        custo: 48.00,
+        preco: 119.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.50,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 460,
+        decisao: 'Em Análise',
+        qtd: 6,
+        obs: 'Ticket alto; validar giro antes de comprometer lote maior'
+      },
+      c5: {
+        nome: 'Item em Liquidação (Ciclo 21d+ Sem Ads)',
+        canal: 'Shopee',
+        custo: 25.00,
+        preco: 39.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 0.0,
+        impostoPct: 0.0,
+        pesoGramas: 250,
+        decisao: 'Em Liquidação',
+        qtd: 5,
+        obs: 'Resgate de caixa sem prejuízo'
+      }
+    };
+
+    const DEFAULT_CATALOG = [
+      {
+        id: 'sku-101',
+        nome: 'Suporte Articulado p/ Notebook Alumínio',
+        canal: 'Shopee',
+        decisao: 'Aprovado',
+        custo: 24.00,
+        preco: 59.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 320,
+        qtd: 20,
+        obs: 'Lote 1 — Leve, fácil postagem familiar',
+        createdAt: '2026-11-21'
+      },
+      {
+        id: 'sku-102',
+        nome: 'Mini Chave de Fenda Elétrica Recarregável',
+        canal: 'TikTok Shop',
+        decisao: 'Aprovado',
+        custo: 44.08,
+        preco: 99.90,
+        comissaoPct: 8.0,
+        taxaFixa: 3.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 280,
+        qtd: 10,
+        obs: 'Lote 1 — Alto apelo visual em vídeo curto',
+        createdAt: '2026-11-21'
+      },
+      {
+        id: 'sku-103',
+        nome: 'Luminária LED Touch USB p/ Monitor',
+        canal: 'Shopee',
+        decisao: 'Em Análise',
+        custo: 28.50,
+        preco: 69.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 390,
+        qtd: 10,
+        obs: 'Aguardando confirmação de preço na 25 de Março',
+        createdAt: '2026-11-21'
+      },
+      {
+        id: 'sku-104',
+        nome: 'Cabo Micro-USB Econômico',
+        canal: 'Shopee',
+        decisao: 'Reprovado',
+        custo: 9.50,
+        preco: 22.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 70,
+        qtd: 20,
+        obs: 'Margem líquida apertada pela taxa fixa de R$ 4,00',
+        createdAt: '2026-11-21'
+      },
+      {
+        id: 'sku-105',
+        nome: 'Hub USB 4 Portas (Saldo Giro 21d)',
+        canal: 'Shopee',
+        decisao: 'Em Liquidação',
+        custo: 21.00,
+        preco: 35.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 0.0,
+        impostoPct: 0.0,
+        pesoGramas: 140,
+        qtd: 6,
+        obs: 'Preço acima do piso de liquidação para liberar caixa',
+        createdAt: '2026-11-21'
+      }
+    ];
+
+    const DEFAULT_BATCH = [
+      {
+        id: 'b-1',
+        nome: 'Suporte Articulado p/ Notebook Alumínio',
+        canal: 'Shopee',
+        custo: 24.00,
+        preco: 59.90,
+        comissaoPct: 20.0,
+        taxaFixa: 4.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 320,
+        qtd: 20
+      },
+      {
+        id: 'b-2',
+        nome: 'Mini Chave de Fenda Elétrica Recarregável',
+        canal: 'TikTok Shop',
+        custo: 44.08,
+        preco: 99.90,
+        comissaoPct: 8.0,
+        taxaFixa: 3.00,
+        embalagem: 1.20,
+        adsDevPct: 6.0,
+        impostoPct: 0.0,
+        pesoGramas: 280,
+        qtd: 10
+      }
+    ];
+
+    function fmtBRL(value) {
+      return Number(value || 0).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+
+    function fmtPct(value) {
+      return Number(value || 0).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + '%';
+    }
+
+    function getInputs() {
+      return {
+        nome: (document.getElementById('inpNome').value || 'Produto sem nome').trim(),
+        canal: document.getElementById('selCanal').value,
+        custo: Math.max(0, parseFloat(document.getElementById('inpCusto').value) || 0),
+        preco: Math.max(0.01, parseFloat(document.getElementById('inpPreco').value) || 0.01),
+        comissaoPct: Math.max(0, parseFloat(document.getElementById('inpComissaoPct').value) || 0),
+        taxaFixa: Math.max(0, parseFloat(document.getElementById('inpTaxaFixa').value) || 0),
+        embalagem: Math.max(0, parseFloat(document.getElementById('inpEmbalagem').value) || 0),
+        adsDevPct: Math.max(0, parseFloat(document.getElementById('inpAdsDevPct').value) || 0),
+        impostoPct: Math.max(0, parseFloat(document.getElementById('inpImpostoPct').value) || 0),
+        pesoGramas: Math.max(1, parseFloat(document.getElementById('inpPesoGramas').value) || 0),
+        margemAlvo: Math.max(0, Math.min(85, parseFloat(document.getElementById('inpMargemAlvo').value) || 0)),
+        decisao: document.getElementById('selDecisaoCadastro').value,
+        qtd: Math.max(1, parseInt(document.getElementById('inpQtdLote').value, 10) || 1),
+        obs: (document.getElementById('inpObsCadastro').value || '').trim()
+      };
+    }
+
+    function computeMetrics(item) {
+      const venda = item.preco;
+      const custo = item.custo;
+      const comissaoValor = venda * (item.comissaoPct / 100);
+      const taxaFixa = item.taxaFixa;
+      const embalagem = item.embalagem;
+      const adsDevValor = venda * (item.adsDevPct / 100);
+      const impostoValor = venda * (item.impostoPct / 100);
+
+      const lucroUnit = venda - custo - comissaoValor - taxaFixa - embalagem - adsDevValor - impostoValor;
+      const margemPct = venda > 0 ? (lucroUnit / venda) * 100 : 0;
+
+      // Breakeven liquidation price without extra Ads/Dev provisioning:
+      // P = (Custo + TaxaFixa + Embalagem) / (1 - (Comissao% + Imposto%))
+      const varRateLiq = (item.comissaoPct + item.impostoPct) / 100;
+      const denomLiq = Math.max(0.05, 1 - varRateLiq);
+      const pisoLiquidacao = (custo + taxaFixa + embalagem) / denomLiq;
+
+      // Suggested price for target net margin %
+      const targetMarginRate = Math.min(0.85, (item.margemAlvo || 25) / 100);
+      const totalVarRate = (item.comissaoPct + item.adsDevPct + item.impostoPct) / 100 + targetMarginRate;
+      const denomSug = Math.max(0.05, 1 - totalVarRate);
+      const precoSugerido = (custo + taxaFixa + embalagem) / denomSug;
+
+      return {
+        venda,
+        custo,
+        comissaoValor,
+        taxaFixa,
+        embalagem,
+        adsDevValor,
+        impostoValor,
+        lucroUnit,
+        margemPct,
+        pisoLiquidacao,
+        precoSugerido
+      };
+    }
+
+    function recalculate() {
+      const inp = getInputs();
+      const m = computeMetrics(inp);
+
+      document.getElementById('kpiLucroUnit').textContent = fmtBRL(m.lucroUnit);
+      document.getElementById('kpiLucroUnit').className =
+        'text-xl sm:text-2xl font-extrabold mt-0.5 tabular-nums ' +
+        (m.lucroUnit > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400');
+
+      document.getElementById('kpiMargemPct').textContent = fmtPct(m.margemPct);
+      document.getElementById('kpiPisoLiquidacao').textContent = fmtBRL(m.pisoLiquidacao);
+      document.getElementById('lblPrecoSugerido').textContent = fmtBRL(m.precoSugerido);
+
+      // Traffic light badge
+      const badge = document.getElementById('semaforoBadge');
+      if (m.margemPct > 22) {
+        badge.textContent = '🟢 APROVADO (> 22%)';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 tabular-nums';
+      } else if (m.margemPct >= 15) {
+        badge.textContent = '🟡 ATENÇÃO (15%–22%)';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 tabular-nums';
+      } else {
+        badge.textContent = '🔴 REPROVADO (< 15%)';
+        badge.className = 'px-3 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 tabular-nums';
+      }
+
+      // Operational guardrails
+      const alerts = [];
+      if (inp.preco < 35) {
+        alerts.push('Ticket abaixo de R$ 35,00: taxa fixa unitária pesa proporcionalmente mais na margem.');
+      }
+      if (inp.pesoGramas > 500) {
+        alerts.push('Peso acima de 500g: atenção ao transporte a pé/apoio familiar até o ponto de coleta.');
+      }
+      if (inp.preco < m.pisoLiquidacao) {
+        alerts.push('Preço atual abaixo do Piso de Liquidação (' + fmtBRL(m.pisoLiquidacao) + '): operação gera prejuízo unitário.');
+      }
+
+      const alertsBox = document.getElementById('alertsBox');
+      alertsBox.innerHTML = alerts
+        .map(
+          (msg) =>
+            `<div class="text-[11px] font-medium px-3 py-2 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-200 border border-rose-200/70 dark:border-rose-800/60">⚠️ ${msg}</div>`
+        )
+        .join('');
+
+      // Breakdown
+      document.getElementById('memVenda').textContent = fmtBRL(m.venda);
+      document.getElementById('memCusto').textContent = '-' + fmtBRL(m.custo);
+      document.getElementById('memComissao').textContent = '-' + fmtBRL(m.comissaoValor);
+      document.getElementById('memTaxaFixa').textContent = '-' + fmtBRL(m.taxaFixa);
+      document.getElementById('memEmbalagem').textContent = '-' + fmtBRL(m.embalagem);
+      document.getElementById('memAdsDev').textContent = '-' + fmtBRL(m.adsDevValor);
+      document.getElementById('memImposto').textContent = '-' + fmtBRL(m.impostoValor);
+      document.getElementById('memLucroFinal').textContent = fmtBRL(m.lucroUnit);
+      document.getElementById('memLucroFinal').className =
+        'tabular-nums ' +
+        (m.lucroUnit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400');
+    }
+
+    function applyChannelPreset(channelKey) {
+      const sel = document.getElementById('selCanal');
+      if (channelKey === 'shopee') {
+        sel.value = 'Shopee';
+        document.getElementById('inpComissaoPct').value = '20.0';
+        document.getElementById('inpTaxaFixa').value = '4.00';
+      } else {
+        sel.value = 'TikTok Shop';
+        document.getElementById('inpComissaoPct').value = '8.0';
+        document.getElementById('inpTaxaFixa').value = '3.00';
+      }
+      recalculate();
+    }
+
+    function onCanalChange() {
+      const canal = document.getElementById('selCanal').value;
+      if (canal === 'Shopee') {
+        applyChannelPreset('shopee');
+      } else {
+        applyChannelPreset('tiktok');
+      }
+    }
+
+    function applySuggestedPrice() {
+      const m = computeMetrics(getInputs());
+      document.getElementById('inpPreco').value = m.precoSugerido.toFixed(2);
+      recalculate();
+    }
+
+    function applyLiquidationFloor() {
+      const m = computeMetrics(getInputs());
+      document.getElementById('inpPreco').value = m.pisoLiquidacao.toFixed(2);
+      recalculate();
+    }
+
+    function loadScenario(key) {
+      const sc = SCENARIOS[key];
+      if (!sc) return;
+      document.getElementById('inpNome').value = sc.nome;
+      document.getElementById('selCanal').value = sc.canal;
+      document.getElementById('inpCusto').value = sc.custo.toFixed(2);
+      document.getElementById('inpPreco').value = sc.preco.toFixed(2);
+      document.getElementById('inpComissaoPct').value = sc.comissaoPct.toFixed(1);
+      document.getElementById('inpTaxaFixa').value = sc.taxaFixa.toFixed(2);
+      document.getElementById('inpEmbalagem').value = sc.embalagem.toFixed(2);
+      document.getElementById('inpAdsDevPct').value = sc.adsDevPct.toFixed(1);
+      document.getElementById('inpImpostoPct').value = sc.impostoPct.toFixed(1);
+      document.getElementById('inpPesoGramas').value = sc.pesoGramas;
+      document.getElementById('selDecisaoCadastro').value = sc.decisao;
+      document.getElementById('inpQtdLote').value = sc.qtd;
+      document.getElementById('inpObsCadastro').value = sc.obs;
+      recalculate();
+    }
+
+    // =========================================================
+    // BATCH ALLOCATOR (MVP R$ 1.000,00)
+    // =========================================================
+    function loadBatch() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_BATCH);
+        if (!raw) return DEFAULT_BATCH.slice();
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : DEFAULT_BATCH.slice();
+      } catch (e) {
+        return DEFAULT_BATCH.slice();
+      }
+    }
+
+    function saveBatch(list) {
+      localStorage.setItem(STORAGE_KEY_BATCH, JSON.stringify(list));
+    }
+
+    function loadSampleBatch() {
+      saveBatch(DEFAULT_BATCH.slice());
+      renderBatch();
+    }
+
+    function addCurrentProductToBatch() {
+      const inp = getInputs();
+      const batch = loadBatch();
+      batch.push({
+        id: 'b-' + Date.now(),
+        nome: inp.nome,
+        canal: inp.canal,
+        custo: inp.custo,
+        preco: inp.preco,
+        comissaoPct: inp.comissaoPct,
+        taxaFixa: inp.taxaFixa,
+        embalagem: inp.embalagem,
+        adsDevPct: inp.adsDevPct,
+        impostoPct: inp.impostoPct,
+        pesoGramas: inp.pesoGramas,
+        qtd: inp.qtd
+      });
+      saveBatch(batch);
+      renderBatch();
+    }
+
+    function removeBatchItem(id) {
+      const batch = loadBatch().filter((item) => item.id !== id);
+      saveBatch(batch);
+      renderBatch();
+    }
+
+    function renderBatch() {
+      const batch = loadBatch();
+      const tbody = document.getElementById('batchTableBody');
+
+      let totalCapital = 0;
+      let totalReceita = 0;
+      let totalLucro = 0;
+      let totalUnidades = 0;
+      let totalPesoGramas = 0;
+
+      tbody.innerHTML = batch
+        .map((item) => {
+          const m = computeMetrics(item);
+          const subCusto = item.custo * item.qtd;
+          const subReceita = item.preco * item.qtd;
+          const subLucro = m.lucroUnit * item.qtd;
+
+          totalCapital += subCusto;
+          totalReceita += subReceita;
+          totalLucro += subLucro;
+          totalUnidades += item.qtd;
+          totalPesoGramas += (item.pesoGramas || 0) * item.qtd;
+
+          return `
+            <tr>
+              <td class="py-2 pr-3 font-semibold">${escapeHtml(item.nome)}</td>
+              <td class="py-2 px-2">${escapeHtml(item.canal)}</td>
+              <td class="py-2 px-2 text-right">${fmtBRL(item.custo)}</td>
+              <td class="py-2 px-2 text-right">${fmtBRL(item.preco)}</td>
+              <td class="py-2 px-2 text-center">${item.qtd}</td>
+              <td class="py-2 px-2 text-right font-semibold">${fmtBRL(subCusto)}</td>
+              <td class="py-2 px-2 text-right font-bold ${subLucro >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${fmtBRL(subLucro)}</td>
+              <td class="py-2 pl-2 text-right">
+                <button type="button" onclick="removeBatchItem('${item.id}')" class="text-rose-600 hover:underline font-semibold">Remover</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join('');
+
+      if (batch.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-slate-400">Nenhum item no lote. Adicione um produto ou carregue o lote exemplo.</td></tr>`;
+      }
+
+      const saldoLivre = MVP_BUDGET - totalCapital;
+      const roiPct = totalCapital > 0 ? (totalLucro / totalCapital) * 100 : 0;
+
+      const capEl = document.getElementById('batchCapital');
+      capEl.textContent = fmtBRL(totalCapital);
+      capEl.className =
+        'text-lg font-extrabold mt-0.5 tabular-nums ' +
+        (totalCapital > MVP_BUDGET ? 'text-rose-600 dark:text-rose-400' : '');
+
+      document.getElementById('batchSaldo').textContent =
+        totalCapital > MVP_BUDGET
+          ? `Acima do teto em ${fmtBRL(totalCapital - MVP_BUDGET)}`
+          : `Saldo livre: ${fmtBRL(saldoLivre)}`;
+
+      document.getElementById('batchReceita').textContent = fmtBRL(totalReceita);
+      document.getElementById('batchUnidades').textContent = `${totalUnidades} unidades`;
+      document.getElementById('batchLucro').textContent = fmtBRL(totalLucro);
+      document.getElementById('batchRoi').textContent = `ROI sobre lote: ${fmtPct(roiPct)}`;
+      document.getElementById('batchPeso').textContent = `${(totalPesoGramas / 1000).toFixed(2)} kg`;
+    }
+
+    // =========================================================
+    // TAB 2: CATALOG & PRODUCT CONTROL
+    // =========================================================
+    function loadCatalog() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_CATALOG);
+        if (!raw) {
+          localStorage.setItem(STORAGE_KEY_CATALOG, JSON.stringify(DEFAULT_CATALOG));
+          return DEFAULT_CATALOG.slice();
+        }
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : DEFAULT_CATALOG.slice();
+      } catch (e) {
+        return DEFAULT_CATALOG.slice();
+      }
+    }
+
+    function saveCatalog(list) {
+      localStorage.setItem(STORAGE_KEY_CATALOG, JSON.stringify(list));
+      updateBadgeCount();
+    }
+
+    function updateBadgeCount() {
+      const list = loadCatalog();
+      document.getElementById('badgeCatalogCount').textContent = list.length;
+    }
+
+    function registerProductFromSimulator() {
+      const inp = getInputs();
+      const catalog = loadCatalog();
+      const newItem = {
+        id: 'sku-' + Date.now(),
+        nome: inp.nome,
+        canal: inp.canal,
+        decisao: inp.decisao,
+        custo: inp.custo,
+        preco: inp.preco,
+        comissaoPct: inp.comissaoPct,
+        taxaFixa: inp.taxaFixa,
+        embalagem: inp.embalagem,
+        adsDevPct: inp.adsDevPct,
+        impostoPct: inp.impostoPct,
+        pesoGramas: inp.pesoGramas,
+        qtd: inp.qtd,
+        obs: inp.obs,
+        createdAt: new Date().toISOString().slice(0, 10)
+      };
+
+      catalog.unshift(newItem);
+      saveCatalog(catalog);
+
+      const fb = document.getElementById('lblSaveFeedback');
+      fb.textContent = `Salvo como "${inp.decisao}" na Aba 2!`;
+      setTimeout(() => {
+        fb.textContent = '';
+      }, 3000);
+
+      renderCatalog();
+    }
+
+    function updateProductStatus(id, newStatus) {
+      const catalog = loadCatalog().map((item) =>
+        item.id === id ? { ...item, decisao: newStatus } : item
+      );
+      saveCatalog(catalog);
+      renderCatalog();
+    }
+
+    function deleteProduct(id) {
+      const catalog = loadCatalog().filter((item) => item.id !== id);
+      saveCatalog(catalog);
+      renderCatalog();
+    }
+
+    function loadProductIntoSimulator(id) {
+      const item = loadCatalog().find((p) => p.id === id);
+      if (!item) return;
+
+      document.getElementById('inpNome').value = item.nome;
+      document.getElementById('selCanal').value = item.canal;
+      document.getElementById('inpCusto').value = Number(item.custo).toFixed(2);
+      document.getElementById('inpPreco').value = Number(item.preco).toFixed(2);
+      document.getElementById('inpComissaoPct').value = Number(item.comissaoPct).toFixed(1);
+      document.getElementById('inpTaxaFixa').value = Number(item.taxaFixa).toFixed(2);
+      document.getElementById('inpEmbalagem').value = Number(item.embalagem).toFixed(2);
+      document.getElementById('inpAdsDevPct').value = Number(item.adsDevPct).toFixed(1);
+      document.getElementById('inpImpostoPct').value = Number(item.impostoPct || 0).toFixed(1);
+      document.getElementById('inpPesoGramas').value = item.pesoGramas || 250;
+      document.getElementById('selDecisaoCadastro').value = item.decisao;
+      document.getElementById('inpQtdLote').value = item.qtd || 10;
+      document.getElementById('inpObsCadastro').value = item.obs || '';
+
+      recalculate();
+      switchTab('simulador');
+    }
+
+    function setStatusFilter(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.status-filter-btn').forEach((btn) => {
+        const isActive = btn.getAttribute('data-status') === status;
+        btn.className =
+          'status-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition ' +
+          (isActive
+            ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950'
+            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700');
+      });
+      renderCatalog();
+    }
+
+    function getStatusStyle(status) {
+      switch (status) {
+        case 'Aprovado':
+          return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800';
+        case 'Em Análise':
+          return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800';
+        case 'Em Liquidação':
+          return 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-800';
+        default:
+          return 'bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-800';
+      }
+    }
+
+    function renderCatalog() {
+      const all = loadCatalog();
+      updateBadgeCount();
+
+      // Summary KPIs across catalog
+      const approved = all.filter((i) => i.decisao === 'Aprovado');
+      const reproved = all.filter((i) => i.decisao === 'Reprovado');
+      const liqOrAnalysis = all.filter((i) => i.decisao === 'Em Liquidação' || i.decisao === 'Em Análise');
+
+      const capitalAprovado = approved.reduce((acc, i) => acc + i.custo * (i.qtd || 1), 0);
+      const lucroAprovado = approved.reduce((acc, i) => {
+        const m = computeMetrics(i);
+        return acc + m.lucroUnit * (i.qtd || 1);
+      }, 0);
+
+      document.getElementById('catTotalSkus').textContent = all.length;
+      document.getElementById('catStatusBreakdown').textContent =
+        `${approved.length} Aprovados • ${reproved.length} Reprovados`;
+
+      const capAprovEl = document.getElementById('catCapitalAprovado');
+      capAprovEl.textContent = fmtBRL(capitalAprovado);
+      capAprovEl.className =
+        'text-2xl font-extrabold mt-1 tabular-nums ' +
+        (capitalAprovado > MVP_BUDGET ? 'text-rose-600 dark:text-rose-400' : '');
+
+      document.getElementById('catSaldoMvp').textContent =
+        capitalAprovado > MVP_BUDGET
+          ? `Excede MVP em ${fmtBRL(capitalAprovado - MVP_BUDGET)}`
+          : `Saldo disponível: ${fmtBRL(MVP_BUDGET - capitalAprovado)}`;
+
+      document.getElementById('catLucroAprovado').textContent = fmtBRL(lucroAprovado);
+      document.getElementById('catLiquidacaoAnalise').textContent = liqOrAnalysis.length;
+
+      // Filtered list
+      const search = (document.getElementById('inpBuscaCatalogo').value || '').trim().toLowerCase();
+      const channelFilter = document.getElementById('selFiltroCanal').value;
+
+      const filtered = all.filter((item) => {
+        const matchStatus = currentStatusFilter === 'ALL' || item.decisao === currentStatusFilter;
+        const matchChannel = channelFilter === 'ALL' || item.canal === channelFilter;
+        const matchText =
+          !search ||
+          item.nome.toLowerCase().includes(search) ||
+          (item.obs || '').toLowerCase().includes(search);
+        return matchStatus && matchChannel && matchText;
+      });
+
+      const tbody = document.getElementById('catalogTableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-slate-400">Nenhum produto encontrado com os filtros selecionados.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((item) => {
+          const m = computeMetrics(item);
+          const statusCls = getStatusStyle(item.decisao);
+          return `
+            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+              <td class="py-2.5 pr-3">
+                <div class="font-bold text-slate-900 dark:text-slate-100">${escapeHtml(item.nome)}</div>
+                ${item.obs ? `<div class="text-[11px] text-slate-500 dark:text-slate-400">${escapeHtml(item.obs)}</div>` : ''}
+              </td>
+              <td class="py-2.5 px-2 font-medium">${escapeHtml(item.canal)}</td>
+              <td class="py-2.5 px-2">
+                <select
+                  onchange="updateProductStatus('${item.id}', this.value)"
+                  class="px-2 py-1 rounded-lg text-[11px] font-bold border ${statusCls} focus:outline-none cursor-pointer"
+                >
+                  <option value="Aprovado" ${item.decisao === 'Aprovado' ? 'selected' : ''}>🟢 Aprovado</option>
+                  <option value="Em Análise" ${item.decisao === 'Em Análise' ? 'selected' : ''}>🟡 Em Análise</option>
+                  <option value="Em Liquidação" ${item.decisao === 'Em Liquidação' ? 'selected' : ''}>🔵 Em Liquidação</option>
+                  <option value="Reprovado" ${item.decisao === 'Reprovado' ? 'selected' : ''}>🔴 Reprovado</option>
+                </select>
+              </td>
+              <td class="py-2.5 px-2 text-right">${fmtBRL(item.custo)}</td>
+              <td class="py-2.5 px-2 text-right font-semibold">${fmtBRL(item.preco)}</td>
+              <td class="py-2.5 px-2 text-right font-bold ${m.lucroUnit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${fmtBRL(m.lucroUnit)}</td>
+              <td class="py-2.5 px-2 text-right">${fmtPct(m.margemPct)}</td>
+              <td class="py-2.5 px-2 text-right text-amber-700 dark:text-amber-300 font-semibold">${fmtBRL(m.pisoLiquidacao)}</td>
+              <td class="py-2.5 px-2 text-center">${item.qtd || 1}</td>
+              <td class="py-2.5 pl-2 text-right whitespace-nowrap space-x-2">
+                <button
+                  type="button"
+                  onclick="loadProductIntoSimulator('${item.id}')"
+                  class="text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
+                >
+                  Simular
+                </button>
+                <button
+                  type="button"
+                  onclick="deleteProduct('${item.id}')"
+                  class="text-rose-600 hover:underline font-semibold"
+                >
+                  Excluir
+                </button>
+              </td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
+
+    function exportCatalogCSV() {
+      const list = loadCatalog();
+      const headers = [
+        'ID', 'Data', 'Produto', 'Canal', 'Decisao', 'Custo_Compra',
+        'Preco_Venda', 'Lucro_Liquido_Unit', 'Margem_Liquida_Pct',
+        'Piso_Liquidacao', 'Qtd_Lote', 'Peso_Gramas', 'Observacao'
+      ];
+      const rows = list.map((item) => {
+        const m = computeMetrics(item);
+        return [
+          item.id,
+          item.createdAt || '',
+          `"${(item.nome || '').replace(/"/g, '""')}"`,
+          item.canal,
+          item.decisao,
+          item.custo.toFixed(2),
+          item.preco.toFixed(2),
+          m.lucroUnit.toFixed(2),
+          m.margemPct.toFixed(2),
+          m.pisoLiquidacao.toFixed(2),
+          item.qtd || 1,
+          item.pesoGramas || 0,
+          `"${(item.obs || '').replace(/"/g, '""')}"`
+        ].join(';');
+      });
+
+      const csvContent = '﻿' + [headers.join(';'), ...rows].join('
+');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'catalogo_produtos_mvp.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCatalogJSON() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        catalog: loadCatalog(),
+        batch: loadBatch()
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'backup_gestor_ecommerce_mvp.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importCatalogJSON(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data.catalog)) {
+            saveCatalog(data.catalog);
+          } else if (Array.isArray(data)) {
+            saveCatalog(data);
+          }
+          if (Array.isArray(data.batch)) {
+            saveBatch(data.batch);
+          }
+          renderCatalog();
+          renderBatch();
+          alert('Backup importado com sucesso!');
+        } catch (err) {
+          alert('Arquivo JSON inválido.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // =========================================================
+    // NAVIGATION & THEME
+    // =========================================================
+    function switchTab(tabName) {
+      const isSim = tabName === 'simulador';
+      document.getElementById('viewSimulador').classList.toggle('hidden', !isSim);
+      document.getElementById('viewCatalogo').classList.toggle('hidden', isSim);
+
+      const btnSim = document.getElementById('tabBtnSimulador');
+      const btnCat = document.getElementById('tabBtnCatalogo');
+
+      if (isSim) {
+        btnSim.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950';
+        btnCat.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700';
+      } else {
+        btnCat.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950';
+        btnSim.className = 'px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700';
+        renderCatalog();
+      }
+    }
+
+    function applySavedTheme() {
+      const saved = localStorage.getItem(STORAGE_KEY_THEME);
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (saved === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem(STORAGE_KEY_THEME, isDark ? 'dark' : 'light');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Initialize
+    applySavedTheme();
+    recalculate();
+    renderBatch();
+    renderCatalog();
+  </script>
+</body>
+</html>
